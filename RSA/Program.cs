@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
@@ -25,10 +25,10 @@ namespace RSA
         public static void Main()
         {
             // Крок 1: Вибрати два простих числа p і q
-           // BigInteger p = GetBigPrime();
-            //BigInteger q = GetBigPrime();
-            BigInteger p = 61;
-            BigInteger q = 53;
+            BigInteger p = GetBigPrime();
+            BigInteger q = GetBigPrime();
+           // BigInteger p = 61;
+           // BigInteger q = 53;
 
             Console.WriteLine("q: " + q);
             Console.WriteLine("p: " + p);
@@ -71,7 +71,7 @@ namespace RSA
 
             string inputText = File.ReadAllText(inputFilePath);
             Console.WriteLine("Input text length: " + inputText.Length);
-             int blockSize = (int)(BigInteger.Log(n, 256)); // Або 3, в залежності від величини n
+             int blockSize = (int)(BigInteger.Log(n, 350)); // Або 3, в залежності від величини n
 
             // Шифрування
             using (StreamWriter writer = new StreamWriter(outputFilePath))
@@ -177,6 +177,7 @@ namespace RSA
             return BigInteger.ModPow(encryptedMessage, d, n);
         }
 
+
         public static BigInteger MulMod(BigInteger a, BigInteger b, BigInteger m)
         {
             BigInteger res = 0;
@@ -216,8 +217,9 @@ namespace RSA
             Random rand = new Random();
             byte[] bytes = new byte[8];
             rand.NextBytes(bytes);
-            bytes[0] |= 0x01; // переконатися, що число непарне
-            bytes[7] |= 0x80; // встановлюємо найстарший біт, щоб число було 64-бітним
+
+            // Встановлюємо старший біт у 0, щоб уникнути негативних значень
+            bytes[7] &= 0x7F;
 
             return new BigInteger(bytes);
         }
@@ -294,9 +296,18 @@ namespace RSA
             while (true)
             {
                 BigInteger candidate = GetLowLevelPrime();
+
+                // Перевірка на позитивність кандидата
+                if (candidate < 0)
+                {
+                    Console.WriteLine("Generated a negative candidate, regenerating...");
+                    continue; // Продовжуємо, якщо число негативне
+                }
+
                 if (MillerRabinTest(candidate))
                     return candidate;
             }
         }
+
     }
 }
