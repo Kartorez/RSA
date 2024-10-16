@@ -71,7 +71,7 @@ namespace RSA
 
             string inputText = File.ReadAllText(inputFilePath);
             Console.WriteLine("Input text length: " + inputText.Length);
-             int blockSize = (int)(BigInteger.Log(n, 350)); // Або 3, в залежності від величини n
+             int blockSize = (int)(BigInteger.Log(n, 256)); // Або 3, в залежності від величини n
 
             // Шифрування
             using (StreamWriter writer = new StreamWriter(outputFilePath))
